@@ -1,36 +1,46 @@
 $fn = 30;
 
 boxWidth = [50,100,150];
-boxHeight = [50,100];
+boxHeight = [50,100,150];
 boxDepth = [100,150,200];
+
+bottom = 0;
+middle = 1;
+top = 2;
+topbottom = 3;
+left = 0;
+right = 2;
+leftright = 3;
 
 
 cornerRadius = 5;
-wallThickness = 1.6;
+wallThickness = 1.2;
 tolerance = 0.5;
 
 
-box(1,1,1,cornerRadius);
+
+
+box(1,1,1,cornerRadius,left,topbottom);
 
 translate([boxWidth[1],0,0])
-box(2,0,1,cornerRadius);
+box(2,0,1,cornerRadius,right,bottom);
 
 translate([boxWidth[1],0,boxHeight[0]])
-box(1,0,1,cornerRadius);
+box(1,0,1,cornerRadius,middle,top);
 
 translate([boxWidth[1] + boxWidth[1],0,boxHeight[0]])
-box(0,0,1,cornerRadius);
+box(0,0,1,cornerRadius, right, top);
 
 
-module box(w, h, d, r){
+module box(w, h, d, r, horizontal, vertical){
     
-    boxFrame(w, h, d, r);
+    boxFrame(w, h, d, r, horizontal, vertical);
 
     
     union(){
         boxTray(w, h, d, r-wallThickness);
         
-        translate([boxWidth[w]/2,1,boxHeight[h]/2])
+        translate([boxWidth[w]/2,1,boxHeight[h]/3])
         knob();
     }
     
@@ -50,7 +60,7 @@ module boxTray(w, h, d, r){
     
 }
 
-module boxFrame(w, h, d, r){
+module boxFrame(w, h, d, r, horizontal, vertical){
     
     union(){
         difference(){
@@ -61,26 +71,35 @@ module boxFrame(w, h, d, r){
             frameBlock(w, h, d, r-wallThickness);
             
             for(j = [0 : (boxDepth[d]/50)-1]){
-                for( i = [0 : (boxWidth[w]/50)-1]){
-                    translate([19.5 + i*50,19.5+ j * 50, boxHeight[h]-2])
-                    cube([11,11,10]);
+                
+                if((vertical == middle) || (vertical == bottom)){
+                    for( i = [0 : (boxWidth[w]/50)-1]){
+                        translate([19.5 + i*50,19.5+ j * 50, boxHeight[h]-2])
+                        cube([11,11,10]);
+                    }
                 }
-                for( i = [0 : (boxHeight[h]/50)-1]){
-                    translate([boxWidth[w]-2,19.5 + j * 50, 19.5 + i * 50])
-                    cube([10,11,11]);
+                if ((horizontal == left) || (horizontal == middle)){
+                    for( i = [0 : (boxHeight[h]/50)-1]){
+                        translate([boxWidth[w]-2,19.5 + j * 50, 19.5 + i * 50])
+                        cube([10,11,11]);
+                    }
                 }
             }
             
         }
         
         for(j = [0 : (boxDepth[d]/50)-1]){
-            for( i = [0 : (boxWidth[w]/50)-1]){
-                translate([20 + i*50,20 + j * 50, -2])
-                cube([10,10,3]);
+            if((vertical == top) || (vertical == middle)){
+                for( i = [0 : (boxWidth[w]/50)-1]){
+                    translate([20 + i*50,20 + j * 50, -wallThickness])
+                    cube([10,10,1+wallThickness]);
+                }
             }
-            for( i = [0 : (boxHeight[h]/50)-1]){
-                translate([-2,20 + j * 50, 20 + i * 50])
-                cube([3,10,10]);
+            if ((horizontal == right) || (horizontal == middle)){
+                for( i = [0 : (boxHeight[h]/50)-1]){
+                    translate([-wallThickness,20 + j * 50, 20 + i * 50])
+                    cube([1+wallThickness,10,10]);
+                }
             }
         }
         
@@ -89,15 +108,7 @@ module boxFrame(w, h, d, r){
 }
 
 
-module slider(d, r){
-    
-    s = 2;
-    
-    linear_extrude(height = 2, convexity = 10, scale=[s,1])
-    translate([(-(r/s)/2),0,0])
-    square([r/s,boxDepth[d]]);
-    
-}
+
     
 
 module frameBlock(w, h, d, r){
