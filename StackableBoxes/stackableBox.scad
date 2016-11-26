@@ -22,6 +22,7 @@ tolerance = 0.5;
 
 box(1,1,1,cornerRadius,left,topbottom);
 
+/*
 translate([boxWidth[1],0,0])
 box(2,0,1,cornerRadius,right,bottom);
 
@@ -30,11 +31,11 @@ box(1,0,1,cornerRadius,middle,top);
 
 translate([boxWidth[1] + boxWidth[1],0,boxHeight[0]])
 box(0,0,1,cornerRadius, right, top);
-
+*/
 
 module box(w, h, d, r, horizontal, vertical){
     
-    boxFrame(w, h, d, r, horizontal, vertical);
+    *boxFrame(w, h, d, r, horizontal, vertical);
 
     
     union(){
@@ -144,7 +145,7 @@ module knob(){
     
     width = 30;
     height = 7;
-    depth = 15;
+    depth = 10;
     
     translate([-width/2+ height/2,0,0])
     rotate([90,0,0])
